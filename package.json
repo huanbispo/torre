@@ -2,6 +2,7 @@
   "name": "torre",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "description": "Terminal para vários agentes de código no Windows",
   "main": "./out/main/index.js",
   "scripts": {
