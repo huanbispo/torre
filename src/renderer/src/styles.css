@@ -1,0 +1,772 @@
+:root {
+  --bg: #0b1016;
+  --panel: #10171f;
+  --term: #0d131a;
+  --raise: #17202b;
+  --line: #222e3c;
+  --line-strong: #3a4b60;
+  --text: #cdd6e1;
+  --dim: #74859a;
+  --run: #56b6f7;
+  --wait: #f5b04c;
+  --done: #5ccf88;
+  --err: #f47070;
+  --add-bg: rgba(92, 207, 136, 0.14);
+  --del-bg: rgba(244, 112, 112, 0.14);
+  --sans: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+  --display: 'IBM Plex Sans Condensed', 'IBM Plex Sans', 'Segoe UI', sans-serif;
+  --mono: 'Cascadia Mono', 'IBM Plex Mono', Consolas, monospace;
+  --top-h: 40px;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 13px;
+  line-height: 1.45;
+  font-variant-numeric: tabular-nums;
+  overflow: hidden;
+  user-select: none;
+}
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+}
+button:disabled {
+  cursor: default;
+}
+button:focus-visible {
+  outline: 2px solid var(--run);
+  outline-offset: -2px;
+}
+p {
+  margin: 0;
+}
+.mono {
+  font-family: var(--mono);
+}
+.dim {
+  color: var(--dim);
+}
+.add {
+  color: var(--done);
+}
+.del {
+  color: var(--err);
+}
+kbd {
+  font-family: var(--mono);
+  font-size: 11px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 0 4px;
+  color: var(--text);
+}
+
+/* estado de uma sessão: a cor vem daqui e desce para o ponto, a linha e o anel */
+.is-run {
+  --s: var(--run);
+}
+.is-wait {
+  --s: var(--wait);
+}
+.is-done {
+  --s: var(--done);
+}
+.is-idle {
+  --s: var(--dim);
+}
+.is-exit {
+  --s: var(--err);
+}
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--s, var(--dim));
+  display: inline-block;
+  flex: none;
+}
+
+.app {
+  height: 100%;
+  display: grid;
+  grid-template-rows: var(--top-h) minmax(0, 1fr) 26px;
+}
+
+/* barra de cima: é também a barra de título, então arrasta a janela */
+.top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 150px 0 14px; /* à direita ficam os botões da janela, que o Windows desenha */
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+  -webkit-app-region: drag;
+}
+.top button,
+.top .find {
+  -webkit-app-region: no-drag;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: 0.02em;
+}
+.logo i {
+  width: 12px;
+  height: 12px;
+  border: 2.5px solid var(--run);
+  border-radius: 50%;
+}
+.find {
+  flex: 1;
+  max-width: 480px;
+  margin-inline: auto;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 3px 11px;
+  color: var(--dim);
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  opacity: 0.6;
+}
+.find .mono {
+  font-size: 11px;
+}
+.seg {
+  display: flex;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+  color: var(--dim);
+}
+.seg button {
+  padding: 3px 11px;
+}
+.seg button.on {
+  background: var(--raise);
+  color: var(--text);
+}
+.seg button:disabled {
+  opacity: 0.5;
+}
+
+/* as colunas vêm do App: a largura do painel de mudanças é do usuário */
+.body {
+  display: grid;
+  min-height: 0;
+}
+
+/* lateral */
+.side {
+  background: var(--panel);
+  border-right: 1px solid var(--line);
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+  min-width: 0;
+}
+.sec {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dim);
+  padding: 8px 6px 2px;
+  display: flex;
+  justify-content: space-between;
+}
+.ag {
+  display: flex;
+  gap: 9px;
+  padding: 7px 8px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  min-width: 0;
+  width: 100%;
+}
+.ag:hover {
+  background: rgba(23, 32, 43, 0.6);
+}
+.ag .dot {
+  margin-top: 6px;
+}
+.ag.sel {
+  background: var(--raise);
+}
+.ag.is-wait {
+  border-color: var(--wait);
+  background: rgba(245, 176, 76, 0.09);
+}
+.ag-b {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.ag-h {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.ag-h b {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ag-h .dim {
+  flex: none;
+  font-size: 11.5px;
+}
+.ag-m {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ag-s {
+  color: var(--s);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ag.is-idle .ag-s {
+  color: var(--dim);
+}
+.ag-c {
+  display: flex;
+  gap: 9px;
+  font-size: 11px;
+  font-family: var(--mono);
+  margin-top: 2px;
+}
+.side-f {
+  margin-top: auto;
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.new {
+  border: 1px dashed var(--line);
+  border-radius: 6px;
+  padding: 6px 9px;
+  color: var(--dim);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+.new:hover {
+  color: var(--text);
+  border-color: var(--line-strong);
+}
+.new .mono {
+  font-size: 10.5px;
+}
+
+/* grade de terminais */
+/* Os painéis são posicionados em porcentagem dentro da grade (o App faz a conta); o display:grid
+   daqui só serve para centralizar o aviso de grade vazia. */
+.grid {
+  position: relative;
+  display: grid;
+  margin: 3.5px;
+  min-width: 0;
+  min-height: 0;
+}
+/* divisas arrastáveis: uma faixa de 7 px em cima do vão entre dois painéis */
+.gut {
+  position: absolute;
+  z-index: 2;
+  touch-action: none;
+}
+.gut.v {
+  width: 7px;
+  transform: translateX(-50%);
+  cursor: col-resize;
+}
+.gut.h {
+  left: 0;
+  width: 100%;
+  height: 7px;
+  transform: translateY(-50%);
+  cursor: row-resize;
+}
+.gut::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 2px;
+  background: var(--run);
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+.gut:hover::after,
+.gut:active::after {
+  opacity: 0.75;
+}
+@media (prefers-reduced-motion: reduce) {
+  .gut::after {
+    transition: none;
+  }
+}
+.pane {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  background: var(--term);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+  min-width: 0;
+  min-height: 0;
+}
+.pane.focus {
+  border-color: var(--line-strong);
+}
+.pane.is-wait {
+  border-color: var(--wait);
+  box-shadow: 0 0 0 2px var(--wait);
+}
+.pane-h {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 5px 6px 5px 10px;
+  background: var(--raise);
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+  overflow: hidden;
+  flex: none;
+}
+.pane-h b {
+  font-weight: 600;
+}
+.pane:not(.focus) .pane-h b {
+  color: var(--dim);
+}
+.pane-h .mono {
+  font-size: 11.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pane-h .t {
+  margin-left: auto;
+  color: var(--s);
+  font-size: 12px;
+}
+.icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  display: grid;
+  place-items: center;
+  color: var(--dim);
+  font-size: 15px;
+  line-height: 1;
+  flex: none;
+}
+.icon:hover:not(:disabled) {
+  background: var(--line);
+  color: var(--text);
+}
+.icon.on {
+  background: var(--line);
+  color: var(--run);
+}
+.ico-max {
+  width: 9px;
+  height: 9px;
+  border: 1.5px solid currentColor;
+  border-radius: 1.5px;
+}
+.term {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  margin: 6px 0 4px 10px;
+  overflow: hidden;
+}
+.term .xterm {
+  height: 100%;
+}
+/* O xterm 6 rola por um elemento próprio; a viewport antiga fica atrás, preta e com a barra de
+   rolagem nativa, e aparece na sobra de altura abaixo da última linha. */
+.term .xterm-viewport {
+  background-color: transparent !important;
+  scrollbar-width: none;
+}
+.empty {
+  place-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  color: var(--dim);
+  max-width: 360px;
+}
+.empty b {
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text);
+}
+.empty-a {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+.btn {
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 4px 12px;
+  color: var(--text);
+  white-space: nowrap;
+}
+.btn:hover {
+  border-color: var(--line-strong);
+}
+.btn.pri {
+  background: var(--run);
+  border-color: var(--run);
+  color: #06131d;
+  font-weight: 600;
+}
+
+/* painel de mudanças */
+.diff-wrap {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+}
+.gut.edge {
+  left: 0;
+  top: 0;
+  height: 100%;
+}
+/* minimizado: uma faixa estreita que ainda mostra quanto mudou */
+.rail {
+  background: var(--panel);
+  border-left: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  min-height: 0;
+  overflow: hidden;
+}
+.rail-b {
+  writing-mode: vertical-rl;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--dim);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.rail-b:hover {
+  color: var(--text);
+}
+.rail-b .mono {
+  font-weight: 400;
+  font-size: 12px;
+}
+.diff {
+  flex: 1;
+  background: var(--panel);
+  border-left: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+.d-h {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 8px 7px 12px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+  flex: none;
+}
+.d-h b {
+  font-weight: 600;
+  font-size: 14px;
+}
+.d-h .r {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12px;
+}
+.chip {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0 8px;
+  color: var(--dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.diff-empty {
+  padding: 28px 24px;
+  color: var(--dim);
+  max-width: 44ch;
+}
+.diff-msg {
+  padding: 12px;
+  color: var(--dim);
+  font-family: var(--sans);
+}
+.files {
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+  border-bottom: 1px solid var(--line);
+  max-height: 34%;
+  overflow-y: auto;
+  flex: none;
+}
+.repo {
+  display: flex;
+  flex-direction: column;
+  flex: none;
+}
+/* cabeçalho de cada repositório, quando a sessão mexe em mais de um */
+.repo-h {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 6px 7px 3px;
+  white-space: nowrap;
+}
+.repo + .repo .repo-h {
+  margin-top: 4px;
+  border-top: 1px solid var(--line);
+}
+.repo-h b {
+  font-weight: 600;
+}
+.repo-h .mono {
+  font-size: 11.5px;
+}
+.repo-h .r {
+  margin-left: auto;
+  display: flex;
+  gap: 9px;
+  font-size: 12px;
+}
+.f {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  padding: 3px 7px;
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 12px;
+  white-space: nowrap;
+  width: 100%;
+  flex: none;
+}
+.f:hover {
+  background: rgba(23, 32, 43, 0.6);
+}
+.f.on {
+  background: var(--raise);
+}
+.f .n {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+  direction: rtl; /* num caminho longo, o que se corta é o começo */
+  text-align: left;
+}
+.f .l {
+  width: 1ch;
+  color: var(--dim);
+}
+.f .live {
+  font-family: var(--sans);
+  color: var(--run);
+  flex: none;
+}
+.ag-c .chip {
+  font-family: var(--sans);
+}
+.code {
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.5;
+  overflow: auto;
+  flex: 1;
+  min-height: 0;
+  user-select: text;
+  tab-size: 4;
+}
+.code-inner {
+  min-width: max-content;
+  padding-bottom: 12px;
+}
+.hk {
+  color: var(--dim);
+  padding: 3px 12px;
+  background: var(--raise);
+  margin: 4px 0;
+  white-space: pre;
+}
+.dl {
+  display: grid;
+  grid-template-columns: 4ch 4ch 1ch auto;
+  gap: 1ch;
+  padding: 0 12px;
+  white-space: pre;
+}
+.dl i {
+  font-style: normal;
+  color: var(--dim);
+  text-align: right;
+  user-select: none;
+}
+.dl b {
+  font-weight: 400;
+  user-select: none;
+}
+.dl.a {
+  background: var(--add-bg);
+}
+.dl.d {
+  background: var(--del-bg);
+}
+.dl.a b {
+  color: var(--done);
+}
+.dl.d b {
+  color: var(--err);
+}
+
+/* barra de baixo */
+.status {
+  display: flex;
+  gap: 22px;
+  align-items: center;
+  padding: 0 14px;
+  background: var(--panel);
+  border-top: 1px solid var(--line);
+  color: var(--dim);
+  white-space: nowrap;
+  font-size: 12px;
+  overflow: hidden;
+}
+.status .r {
+  margin-left: auto;
+  display: flex;
+  gap: 22px;
+}
+
+/* abrir sessão */
+.veil {
+  position: fixed;
+  inset: var(--top-h) 0 0 0;
+  background: rgba(6, 10, 14, 0.66);
+  display: grid;
+  place-items: start center;
+  padding-top: 12vh;
+  z-index: 10;
+}
+.launcher {
+  width: min(620px, 90vw);
+  background: var(--panel);
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+.launcher-h {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+}
+.launcher-h b {
+  font-family: var(--display);
+  font-size: 17px;
+  font-weight: 600;
+}
+.launcher-list {
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  max-height: 46vh;
+  overflow-y: auto;
+}
+.launcher-list > p {
+  padding: 14px 10px;
+}
+.launcher-row {
+  display: flex;
+  flex-direction: column;
+  padding: 7px 10px;
+  border-radius: 6px;
+  width: 100%;
+  min-width: 0;
+}
+.launcher-row:hover,
+.launcher-row:focus-visible {
+  background: var(--raise);
+}
+.launcher-row b {
+  font-weight: 600;
+}
+.launcher-row .mono {
+  font-size: 11.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.launcher-f {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border-top: 1px solid var(--line);
+}

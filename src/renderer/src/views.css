@@ -1,0 +1,443 @@
+/* Estilos das telas Quadro e Revisão e dos subagentes na lateral. As cores e fontes vêm de styles.css. */
+
+/* --- telas: o que cada uma mostra e esconde ------------------------------------------------ */
+/* Os terminais nunca saem da página (sair mataria os processos): no Quadro ficam escondidos, e na
+   Revisão vão para a direita, só o da sessão em foco. */
+.body.v-board .grid {
+  display: none;
+}
+.body.v-review .side {
+  display: none;
+}
+.body.v-review .review-wrap {
+  order: 1;
+}
+.body.v-review .grid {
+  order: 2;
+}
+
+/* as etiquetas da lateral (N repositórios, N subagentes) descem de linha inteiras, sem quebrar no meio */
+.ag-c {
+  flex-wrap: wrap;
+  row-gap: 3px;
+}
+.chip {
+  white-space: nowrap;
+}
+
+/* --- subagentes na lateral ------------------------------------------------------------------ */
+.ag-g {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.sub {
+  display: flex;
+  gap: 8px;
+  padding: 3px 8px 3px 26px;
+  border-radius: 5px;
+  min-width: 0;
+  width: 100%;
+  font-size: 12px;
+}
+.sub:hover {
+  background: rgba(23, 32, 43, 0.6);
+}
+.sub .dot {
+  width: 6px;
+  height: 6px;
+  margin-top: 6px;
+}
+.sub .ag-h b {
+  font-weight: 500;
+}
+.sub .ag-s {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--dim);
+}
+.sub.is-wait .ag-s {
+  color: var(--wait);
+}
+.sub.is-done .ag-h b {
+  color: var(--dim);
+}
+.sub.more {
+  color: var(--dim);
+  font-size: 11px;
+}
+
+/* --- Quadro --------------------------------------------------------------------------------- */
+.board {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(300px, 22vw, 440px);
+  min-height: 0;
+  min-width: 0;
+}
+.board-main {
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+.board-empty {
+  margin: auto;
+  color: var(--dim);
+  max-width: 44ch;
+  text-align: center;
+}
+.card {
+  background: var(--term);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  flex: none;
+}
+.card.is-wait {
+  border-color: var(--wait);
+  box-shadow: 0 0 0 2px var(--wait);
+}
+.card-h {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  white-space: nowrap;
+}
+.card-h b {
+  font-family: var(--display);
+  font-size: 17px;
+  font-weight: 600;
+}
+.card-h .mono {
+  font-size: 11.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.pill {
+  color: var(--s);
+  border: 1px solid var(--s);
+  border-radius: 12px;
+  padding: 0 9px;
+  font-size: 12px;
+  flex: none;
+}
+.card-a {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+  flex: none;
+}
+.lbl {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-right: 10px;
+}
+.card-p {
+  max-width: 120ch;
+  user-select: text;
+}
+.card-ask {
+  color: var(--wait);
+  font-weight: 500;
+}
+.card-note {
+  color: var(--dim);
+}
+/* uma faixa por agente: o principal e cada subagente, lado a lado enquanto couberem */
+.lanes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 8px;
+}
+.lane {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+.lane.is-wait {
+  border-color: var(--wait);
+}
+.lane-h {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.lane-h b {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.lane-h .t {
+  margin-left: auto;
+  color: var(--s);
+  font-size: 12px;
+  flex: none;
+}
+.lane-m {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: var(--dim);
+  font-size: 11.5px;
+  flex-wrap: wrap;
+}
+.lane-r {
+  color: var(--done);
+  font-size: 12px;
+}
+.lane-empty {
+  color: var(--dim);
+  font-size: 12px;
+}
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.55;
+}
+.steps li {
+  display: grid;
+  grid-template-columns: 5ch minmax(0, 1fr);
+  gap: 1ch;
+}
+.steps time,
+.ev time {
+  color: var(--dim);
+}
+.steps span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* o passo mais novo de quem ainda trabalha é o que ele faz agora */
+.lane.is-run .steps li:last-child span {
+  color: var(--run);
+}
+.k-ask span,
+.k-ask b {
+  color: var(--wait);
+}
+.k-done span {
+  color: var(--done);
+}
+.k-prompt span {
+  color: #b9a4f5;
+}
+.feed {
+  background: var(--panel);
+  border-left: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+}
+.feed-h {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--line);
+  flex: none;
+}
+.feed-h b {
+  font-weight: 600;
+  font-size: 14px;
+}
+.feed-b {
+  overflow-y: auto;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.ev {
+  display: grid;
+  grid-template-columns: 5ch minmax(0, 1fr);
+  gap: 1ch;
+  flex: none;
+}
+.ev time {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  padding-top: 1px;
+}
+.ev b {
+  font-weight: 600;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ev b .dim {
+  font-weight: 400;
+}
+.ev div > span {
+  display: block;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ev.k-ask div > span {
+  color: var(--wait);
+}
+.ev.k-done div > span {
+  color: var(--done);
+}
+
+/* --- Revisão -------------------------------------------------------------------------------- */
+.review-wrap {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+}
+.gut.edge-r {
+  left: 100%;
+  top: 0;
+  height: 100%;
+}
+.review {
+  flex: 1;
+  display: grid;
+  grid-template-columns: clamp(240px, 16vw, 340px) minmax(0, 1fr);
+  min-width: 0;
+  min-height: 0;
+}
+.review-l {
+  background: var(--panel);
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+.review-l .files {
+  max-height: none;
+  flex: 1;
+  border-bottom: 0;
+}
+.review-c {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  background: var(--panel);
+  border-right: 1px solid var(--line);
+}
+.review-c .d-h .r {
+  font-family: var(--sans);
+}
+.review-c .d-h .mono {
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.sbs {
+  padding-bottom: 12px;
+}
+.srow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+.srow.can {
+  cursor: pointer;
+}
+.srow.can:hover .half {
+  box-shadow: inset 0 0 0 999px rgba(86, 182, 247, 0.07);
+}
+/* na Revisão a linha comprida quebra em vez de sumir: há largura para isso */
+.half {
+  display: grid;
+  grid-template-columns: 5ch 1ch minmax(0, 1fr);
+  gap: 1ch;
+  padding: 0 12px;
+  white-space: pre-wrap;
+  word-break: break-all;
+  min-width: 0;
+}
+.half + .half {
+  border-left: 1px solid var(--line);
+}
+.half i {
+  font-style: normal;
+  color: var(--dim);
+  text-align: right;
+  user-select: none;
+}
+.half b {
+  font-weight: 400;
+  user-select: none;
+}
+.half.a {
+  background: var(--add-bg);
+}
+.half.d {
+  background: var(--del-bg);
+}
+.half.e {
+  background: rgba(116, 133, 154, 0.07);
+}
+.half.a b {
+  color: var(--done);
+}
+.half.d b {
+  color: var(--err);
+}
+.note {
+  margin: 5px 12px 5px 50%;
+  border: 1px solid var(--run);
+  border-radius: 6px;
+  padding: 7px 10px;
+  background: var(--raise);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-family: var(--sans);
+  font-size: 13px;
+  white-space: normal;
+}
+.note input {
+  font: inherit;
+  color: var(--text);
+  background: var(--term);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 5px 8px;
+  user-select: text;
+}
+.note input:focus {
+  outline: none;
+  border-color: var(--run);
+}
+.note-f {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
